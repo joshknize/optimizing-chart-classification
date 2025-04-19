@@ -12,12 +12,26 @@ from kornia.losses import FocalLoss
 from occ.load_dataset import LoadDataset
 
 def run_model(model, config, device, attn_maps=[], verbose=True):
-        torch.set_default_dtype(torch.float32)
-        a = _run(model, config, device, attn_maps=attn_maps, verbose=verbose)
-        return a
+    """Wrapper function training and validation loop."""
+    torch.set_default_dtype(torch.float32)
+    a = _run(model, config, device, attn_maps=attn_maps, verbose=verbose)
+    return a
 
 def _run(model, config, device, attn_maps=[], verbose=True):
+    """ Run the training and validation loop.
     
+    Args:
+        model (torch.nn.Module): The model to train and validate.
+        config (dict): Configuration dictionary containing hyperparameters and paths.
+        device (str): Device to run the model on ('cpu' or 'cuda').
+        attn_maps (list, optional): List of attention maps. Defaults to [] (empty list).
+        verbose (bool, optional): If True, print detailed logs. Defaults to True.
+
+    Returns:
+        dict: A dictionary containing the results of the training and validation.
+    """
+
+
     loss_function_map = {
         "CrossEntropyLoss": nn.CrossEntropyLoss(),
         "FocalLoss": FocalLoss(

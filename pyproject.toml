@@ -1,0 +1,19 @@
+[tool.ruff]
+line-length = 120
+exclude = [
+  ".git",
+  ".venv",
+  "__pycache__",
+  "build",
+  "dist",
+]
+
+# Optional: enable some extra rules
+select = ["E", "F", "I", "W"]
+# E = pycodestyle errors
+# F = pyflakes
+# I = isort
+# W = warnings
+
+# Optional: autofix
+# Use `ruff check . --fix` to apply
