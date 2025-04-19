@@ -1,0 +1,117 @@
+{
+	"model_id": "occ",
+	"description": "Optimizing Chart Classification paper model parameters: F1 = 94.9%",
+	"datetime": "2025-03-14 23:59",
+	"seed": 1867,
+	"no_workers": 4,
+	"train_model": true,
+	"fixed_epochs": true,
+	"fixed_epochs_chkpt": 100,
+	"print": true,
+    "verbose": true,
+	"image": {
+		"size": 518,
+		"resize": 518,
+		"method": "resize_keep_aspect_ratio"
+	},
+	"model": {
+		"type": "vit_base_patch14_reg4_dinov2.lvd142m",
+		"pretrained_timm": true,
+		"pretrained_local": false,
+		"n_classes": 15
+	},
+	"hyperparameters": {
+		"batch_size": 16,
+		"patch_length": 14,
+		"learning_rate": 0.0000002,
+		"gamma": 0.7,
+		"start_epoch": 1,
+		"no_epochs": 1250,
+		"train_pct": 0.8,
+		"drop_rate": 0.0,
+		"attn_drop_rate": 0.0,
+		"freeze_layers": false,
+		"unfreeze_layers": false,
+		"unfreeze_epoch": 15,
+		"pre_padding": 0.0,
+		"augmentation": {
+			"hor_flip": 0.5,
+			"invert": 0.3,
+			"_comment": "jitter probs (in order) is the probability a parameter will be augmented. the values below the array are the magnitudes maxes", 
+			"jitter_probs": [1],
+			"brightness": 0.8,
+			"contrast": 0.8,
+			"saturation": 0.8,
+			"hue": 0.5
+		},
+		"mask": {
+			"_comment": "adds single pixel value square masks to each image of training data. gray=128",
+			"prob": 1,
+			"num_patches": 1,
+			"mask_length": 284,
+			"pixel_value": 128,
+			"_comment2": "below fields for patch-based masking",
+			"by_patch": false,
+			"pct_mask": 0.0
+		},
+		"grid": {
+			"prob": 0.5,
+			"col": 0,
+			"lwd": 1,
+			"uniform": false,
+			"pct_grid": 0.15
+		},
+		"annotations": {
+			"text_prob": 0.0,
+			"shape_prob": 0.0,
+			"_comment": "dimensions are based on post-resize operation",
+	        "position": "uniform",
+			"std_dev": 50,
+            "x_center_pct": 0.9,
+            "y_center_pct": 0.75,
+			"max_text": 4,
+			"max_shapes": 4,
+			"min_shape_r": 5,
+			"max_shape_r": 20,
+			"min_shape_sides": 3,
+			"max_shape_sides": 6,
+			"skewed_distribution": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+			"probabilities": [0.4, 0.3, 0.1, 0.05, 0.03, 0.02, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01],
+			"font_path": "repo/ICDAR_Task1/fonts",
+			"word_file_path": "repo/ICDAR_Task1/python/data/wordlist_mit_10000.txt"
+		},
+		"loss": {
+			"name": "CrossEntropyLoss",
+			"label_smoothing": 1,
+			"alpha": 0.25,
+			"gamma": 2,
+			"reduction": "mean"
+		},
+		"nested_uncertainty_threshold": 0.8,
+		"ensemble_method": "avg",
+		"stratified_data": true,
+		"stratified_weight": 0.75,
+		"stratified_size": 3000
+	},
+	"evaluation": {
+		"write_results": false,
+		"write_dir": "repo/ICDAR_Task1/output_logs",
+		"write_stem": "v4_28_0.csv",
+		"get_img_dims": false,
+		"confusion_matrix": true,
+		"conf_mat_output_dir": "repo/ICDAR_Task1/output_plots",
+		"_comment": "options are attention_overlay or none",
+		"error_analysis": "none",
+		"errors_dir": "data/error_analysis/20241026"
+	},
+	"paths": {
+		"_comment": "source key is no longer used unless I want to go back and split data within the training script",
+		"source": "data/CHARTINFO_2024_Train/images",
+		"test": "",
+		"model": "",
+		"train_folder": "data/CHARTINFO_2024_Train/images",
+		"test_folder": "data/working/tiny_validation_split",
+		"model_save_dir": "",
+		"csv_output": "repo/ICDAR_Task1/output_logs/summary_data"
+	}
+}

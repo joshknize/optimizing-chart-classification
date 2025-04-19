@@ -1,0 +1,119 @@
+{
+    "general": {
+        "model_id": "occ2025",
+        "description": "Optimizing Chart Classification (2025) model parameters. CHARTInfo 2024 F1 = 94.9%",
+        "datetime": "2025-03-14 23:59",
+        "seed": 1867,
+        "no_workers": 4,
+        "train_model": true,
+        "verbose": true
+    },
+    "training": {
+        "_comment": "For resuming training from checkpoint, use total epochs for `no_epochs`. E.g. `start_epoch` = 1251, `no_epochs` = 1500",
+        "start_epoch": 1,
+        "no_epochs": 1250,
+        "chkpt_freq": 100,
+        "weighted_data_loader": true,
+        "wdl_weight": 0.75,
+        "wdl_size": 3000,
+        "freeze_layers": false,
+        "unfreeze_layers": false,
+        "unfreeze_epoch": 15
+    },
+    "model": {
+        "type": "vit_base_patch14_reg4_dinov2.lvd142m",
+        "pretrained_timm": true,
+        "pretrained_local": false,
+        "n_classes": 15
+    },
+    "image_processing": {
+        "size": 518,
+        "resize": 518,
+        "method": "resize_keep_aspect_ratio"
+    },
+    "augmentation": {
+        "scl": {
+            "_comment1": "Shorthand for spatial, coloring, and luminosity.",
+            "hor_flip": 0.5,
+            "invert": 0.3,
+            "_comment2": "list of probabilities to apply ColorJitter. Acceptable args e.g. [1]=[1,1,1,1], [0.5,0.6,0.2,0.3], etc.",
+            "jitter_probs": [1],
+            "_comment3": "maximum magnitudes for each ColorJitter parameter (the torchvision.transforms.v2.ColorJitter() args)",
+            "brightness": 0.8,
+            "contrast": 0.8,
+            "saturation": 0.8,
+            "hue": 0.5
+        },
+        "mask": {
+            "_comment1": "adds single pixel value square masks to ~prob percent of training images",
+            "prob": 1,
+            "num_patches": 1,
+            "mask_length": 284,
+            "pixel_value": 128,
+            "_comment2": "option to override above args for patch-based masking",
+            "by_patch": false,
+            "pct_mask": 0.0
+        },
+        "grid": {
+            "_comment1": "adds pct_grid% grid lines over ~prob percent of training images",
+            "prob": 0.5,
+            "col": 0,
+            "lwd": 1,
+            "pct_grid": 0.15,
+            "_comment2": "option to apply grid lines at uniform spacing",
+            "uniform": false
+        },
+        "annotations": {
+            "_comment1": "experimental: adds text and/or shapes to ~prob percent of training images",
+            "text_prob": 0.0,
+            "shape_prob": 0.0,
+            "_comment2": "dimensions are based on post-resize operation",
+            "position": "uniform",
+            "std_dev": 50,
+            "x_center_pct": 0.9,
+            "y_center_pct": 0.75,
+            "max_text": 4,
+            "max_shapes": 4,
+            "min_shape_r": 5,
+            "max_shape_r": 20,
+            "min_shape_sides": 3,
+            "max_shape_sides": 6,
+            "skewed_distribution": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+            "probabilities": [0.4, 0.3, 0.1, 0.05, 0.03, 0.02, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01],
+            "font_path": "repo/ICDAR_Task1/fonts"
+        }
+    },
+    "hyperparameters": {
+        "batch_size": 16,
+        "patch_length": 14,
+        "learning_rate": 0.0000002,
+        "dropout_rate": 0.0,
+        "attn_dropout_rate": 0.0
+    },
+    "loss": {
+        "_comment1": "Options: CrossEntropyLoss, FocalLoss, CEL_LabelSmoothing",
+        "name": "CrossEntropyLoss",
+        "label_smoothing": 1,
+        "_comment2": "Below relevant for FocalLoss",
+        "alpha": 0.25,
+        "gamma": 2,
+        "reduction": "mean"
+    },
+    "output": {
+        "write_results": false,
+        "write_dir": "repo/ICDAR_Task1/output_logs",
+        "write_stem": "v4_28_0.csv",
+        "confusion_matrix": true,
+        "conf_mat_output_dir": "repo/ICDAR_Task1/output_plots",
+        "_comment": "options are attention_overlay or none",
+        "error_analysis": "none",
+        "errors_dir": "data/error_analysis/20241026"
+    },
+    "paths": {
+        "model": "",
+        "train_folder": "data/CHARTINFO_2024_Train/images",
+        "test_folder": "data/working/tiny_validation_split",
+        "model_save_dir": "",
+        "csv_output": "repo/ICDAR_Task1/output_logs/summary_data"
+    }
+}
