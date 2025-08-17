@@ -4,6 +4,7 @@
         "description": "Optimizing Chart Classification (2025) model parameters. CHART-Info 2024 F1 = 94.9%",
         "datetime": "2025-03-14 23:59",
         "log_level": "INFO",
+        "patch_length": 14,
         "no_workers": 4,
         "seed": 1867,
         "train_model": true,
@@ -30,6 +31,8 @@
     "image_processing": {
         "size": 518,
         "resize": 518,
+        "pad_fill": 255,
+        "_comment1": "Options: crop, resize, resize_keep_aspect_ratio", 
         "method": "resize_keep_aspect_ratio"
     },
     "augmentation": {

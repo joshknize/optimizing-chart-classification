@@ -8,6 +8,8 @@ import torchvision
 from PIL import Image
 from torchvision.datasets import DatasetFolder
 
+from occ.process_images import ProcessImages
+
 logger = logging.getLogger(__name__)
 
 class LoadDataset:
@@ -18,9 +20,9 @@ class LoadDataset:
 
         data_path = config['paths']['train_folder']
 
-        # TODO: PROCESS IMAGES
-        train_transformation = 0
-        val_transformation = 0
+        # obtain train and validation transformation compositions
+        processor = ProcessImages(config)
+        train_transformation, val_transformation = processor.get_transforms(seed)
 
         # create dataset and dataloader
         torch.manual_seed(seed)
