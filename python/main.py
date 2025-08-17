@@ -1,15 +1,19 @@
-import sys
 import json
-import torch
-
-from occ.vit import ViTModel
-from occ.run_model import run_model
-from occ.utils import seed_all, print_elements, hook_attn_map
-
+import logging
+import sys
 from functools import partial
 
+import torch
+from occ.run_model import run_model
+from occ.utils import hook_attn_map, print_elements, seed_all
+from occ.vit import ViTModel
+
+# TODO
+    # process_images.py and connect to load dataset
+    # pick back up at run_model.py 133 -> work on vit.py and utils.py
 
 def main():
+
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # get the config file from the cmd line argument
@@ -23,13 +27,19 @@ def main():
 
     cfg = json.load(cfg)
 
+    logger = logging.getLogger(__name__)
+    logging.basicConfig(filename=f'{cfg['general']['model_id']}_{cfg['general']['datetime']}.log',
+                        encoding='utf-8',
+                        level=logging.INFO # TODO cfg
+                        )
+
     # apply a seed for reproducibility
     seed_all(cfg["general"]["seed"])
 
     if cfg["general"]["verbose"]:
-        print("Print config.json items")
+        logger.info("Print config.json items")
         print_elements(cfg)
-        print("End config print")
+        logger.info("End config print")
 
     model = ViTModel(config=cfg)
 

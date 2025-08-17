@@ -1,10 +1,11 @@
 {
     "general": {
         "model_id": "occ2025",
-        "description": "Optimizing Chart Classification (2025) model parameters. CHARTInfo 2024 F1 = 94.9%",
+        "description": "Optimizing Chart Classification (2025) model parameters. CHART-Info 2024 F1 = 94.9%",
         "datetime": "2025-03-14 23:59",
-        "seed": 1867,
+        "log_level": "INFO",
         "no_workers": 4,
+        "seed": 1867,
         "train_model": true,
         "verbose": true
     },

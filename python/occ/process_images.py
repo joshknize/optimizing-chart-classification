@@ -1,14 +1,14 @@
 import os
-import numpy as np
 import random
+import string
+from itertools import product
 
+import numpy as np
 import torch
 import torchvision.transforms.v2 as transforms
-
 from PIL import Image, ImageDraw, ImageFont
-from itertools import product
-import string
-    
+
+
 def systematic_crop(img, epoch, resize):
     '''
     Crop images by four corners and then center. Only works for epoch evaluation <= 5
