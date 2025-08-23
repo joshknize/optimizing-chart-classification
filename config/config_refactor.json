@@ -11,7 +11,7 @@
         "verbose": true
     },
     "training": {
-        "_comment": "For resuming training from checkpoint, use total epochs for `no_epochs`. E.g. `start_epoch` = 1251, `no_epochs` = 1500",
+        "_comment": "for resuming training from checkpoint, use total epochs for `no_epochs`. E.g. `start_epoch` = 1251, `no_epochs` = 1500",
         "start_epoch": 1,
         "no_epochs": 1250,
         "chkpt_freq": 100,
@@ -37,7 +37,7 @@
     },
     "augmentation": {
         "scl": {
-            "_comment1": "Shorthand for spatial, coloring, and luminosity.",
+            "_comment1": "shorthand for spatial, coloring, and luminosity",
             "hor_flip": 0.5,
             "invert": 0.3,
             "_comment2": "list of probabilities to apply ColorJitter. Acceptable args e.g. [1]=[1,1,1,1], [0.5,0.6,0.2,0.3], etc.",
@@ -95,7 +95,7 @@
         "attn_dropout_rate": 0.0
     },
     "loss": {
-        "_comment1": "Options: CrossEntropyLoss, FocalLoss, CEL_LabelSmoothing",
+        "_comment1": "options: CrossEntropyLoss, FocalLoss, CEL_LabelSmoothing",
         "name": "CrossEntropyLoss",
         "label_smoothing": 1,
         "_comment2": "Below relevant for FocalLoss",
@@ -109,8 +109,9 @@
         "write_stem": "v4_28_0.csv",
         "confusion_matrix": true,
         "conf_mat_output_dir": "repo/ICDAR_Task1/output_plots",
-        "_comment": "options are attention_overlay or none",
-        "error_analysis": "none",
+        "_comment": "error analysis will save all misclassified images",
+        "error_analysis": true,
+        "include_attention_overlay": true,
         "errors_dir": "data/error_analysis/20241026"
     },
     "paths": {

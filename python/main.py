@@ -12,6 +12,11 @@ from occ.vit import ViTModel
     # pick back up at run_model.py 133 -> work on vit.py and utils.py
     # custom dataset split
     # docstrings
+    # logging
+    # reproducibility check
+    # readme
+    # dinov3
+    # better attention map output options / functionality
 
 def main():
 
@@ -45,10 +50,7 @@ def main():
     model = ViTModel(config=cfg)
 
     attn_maps = []
-    if cfg["output"]["error_analysis"] in [
-        "attention_overlay",
-        "all_attention_overlay",
-    ]:
+    if cfg["output"]["include_attention_overlay"]:
         partial_hook = partial(hook_attn_map, attn_maps=attn_maps)
         # register the hook to the last attention layer of OCC model
         model.model.blocks[11].attn.qkv.register_forward_hook(partial_hook)

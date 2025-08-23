@@ -8,6 +8,9 @@ from torch import nn
 
 
 def seed_all(seed):
+    '''
+    Seed all to ensure complete reproducibility of results
+    '''
     random.seed(seed)
     os.environ["PYTHONHASHSEED"] = str(seed)
     np.random.seed(seed)
@@ -19,6 +22,9 @@ def seed_all(seed):
         torch.cuda.manual_seed_all(seed)
 
 def print_elements(data, indent=0):
+    '''
+    Print the elements of the json config file into the log
+    '''
     if isinstance(data, dict):
         for key, value in data.items():
             print(' ' * indent + str(key) + ": " + str(value))
@@ -30,8 +36,12 @@ def print_elements(data, indent=0):
     else:
         print(' ' * indent + str(data))
 
-def hook_attn_map(mod, input, output, attn_maps):
-    with torch.no_grad(): # shouldn't be necessary; only running on validation
+
+
+
+def hook_attn_map(input, output, attn_maps):
+
+    with torch.no_grad():
         input = input[0]
         B, N, C = input.shape
         qkv = (
@@ -39,13 +49,11 @@ def hook_attn_map(mod, input, output, attn_maps):
             .reshape(B, N, 3, 12, C // 12) # 12 = num heads
             .permute(2, 0, 3, 1, 4)
         )
-        q, k, v = (
+        q, k = (
             qkv[0],
-            qkv[1],
-            qkv[2]
+            qkv[1]
         )
         attn = (q @ k.transpose(-2, -1)) * (C // 12)
-        # attn = attn.softmax(dim=-1)
         attn_maps.append(attn)
 
 def overlay_attn(attn_map, head='agg', size=(518,518), patches=37):
