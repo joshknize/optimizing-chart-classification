@@ -56,8 +56,8 @@ class ViTModel(nn.Module):
                                            drop_rate=config['hyperparameters']['dropout_rate'],
                                            attn_drop_rate=config['hyperparameters']['attn_dropout_rate'])
 
-        # # option to experiment with freezing some layers of the network (not used in 2025 OCC paper)
-        # if config['hyperparameters']['freeze_layers']:
+        # not supported: option to experiment with freezing some layers of the network (not used in 2025 OCC paper)
+        # if config['training']['freeze_layers']:
         #     for name, param in self.model.named_parameters():
         #         if 'fc' not in name:  # 'fc' is typically the final fully connected layer in models like ResNet
         #             param.requires_grad = False
@@ -224,7 +224,7 @@ class ViTModel(nn.Module):
                 - includes predicted class, model confidence, and ViT attention map overlay
                 '''
                 if epoch == config['training']['no_epochs'] and error_analysis:
-                    output_dir = config['output']['errors_dir']
+                    output_dir = config['paths']['errors_dir']
                     os.makedirs(output_dir, exist_ok=True)
                     for idx, (img, label, pred, prob, attn) in enumerate(zip(image_misses, label_misses,
                                                                              preds_misses, probs_misses, attn_misses)):
@@ -239,7 +239,9 @@ class ViTModel(nn.Module):
 
                         # plot attention heatmap over the image
                         if config['output']['include_attention_overlay']:
-                            attn=overlay_attn(attn)
+                            # take an average over the attention heads (head='agg')
+                            attn=overlay_attn(attn, head='agg', 
+                                              size=config['image_processing']['resize'], patch_len=config['general']['patch_length'])
                             plt.imshow(img, alpha=0.6)
                             plt.imshow(attn.cpu().numpy(), cmap='jet', alpha=0.4)
                         else:
@@ -278,14 +280,14 @@ class ViTModel(nn.Module):
             logger.info("\t".join(str(f1s[i]) for i in range(len(classes))))
 
         # confusion matrix: only gets overwritten if there's a new best F1 score
-        if config['evaluation']['confusion_matrix'] & (valid_f1 > valid_f1_max) & (not train):
+        if config['output']['confusion_matrix'] & (valid_f1 > valid_f1_max) & (not train):
             cm = confusion_matrix(all_targets, all_predictions)
             plt.figure(figsize=(10, 8))
             sn.heatmap(cm, annot=True, fmt='d', xticklabels=classes, yticklabels=classes, cmap='Blues')
             plt.xlabel('Predicted')
             plt.ylabel('True')
             plt.title('Confusion Matrix')
-            path = os.path.join(config['evaluation']['conf_mat_output_dir'],
+            path = os.path.join(config['paths']['conf_mat_output_dir'],
                                 f"confusion_matrix_{config['model_id']}.png")
             plt.savefig(path)
             plt.close()

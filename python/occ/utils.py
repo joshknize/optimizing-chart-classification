@@ -36,32 +36,34 @@ def print_elements(data, indent=0):
     else:
         print(' ' * indent + str(data))
 
-
-
-
-def hook_attn_map(input, output, attn_maps):
+def hook_attn_map(input, output, attn_maps, n_heads):
 
     with torch.no_grad():
         input = input[0]
         B, N, C = input.shape
         qkv = (
             output.detach()
-            .reshape(B, N, 3, 12, C // 12) # 12 = num heads
+            .reshape(B, N, 3, 12, C // n_heads)
             .permute(2, 0, 3, 1, 4)
         )
         q, k = (
             qkv[0],
             qkv[1]
         )
-        attn = (q @ k.transpose(-2, -1)) * (C // 12)
+        attn = (q @ k.transpose(-2, -1)) * (C // n_heads)
         attn_maps.append(attn)
 
-def overlay_attn(attn_map, head='agg', size=(518,518), patches=37):
+def overlay_attn(attn_map, head='agg', size=518, patch_len=14):
+    
+    n_patches = size / patch_len
+    size = (size,size)
     attn_map = attn_map[:, 0, 1:]
 
     if not head == 'agg':
+        # option to choose the attention map from a single head of ViT
         attn_map = attn_map[head]
     else:
+        # default to an average of the attention across all heads
         attn_map = attn_map.mean(axis=0)
 
     # normalize values
@@ -71,14 +73,14 @@ def overlay_attn(attn_map, head='agg', size=(518,518), patches=37):
             layer_norm = layer_norm.to('cuda')
         attn_map = layer_norm(attn_map)
 
-    # manually set registers and cls token to 0
-    num_registers = 4
+    # need to remove register and classification indices
+    num_registers = len(attn_map) - size
     attn_map = attn_map[num_registers:]
 
     # now get softmax
     attn_map = attn_map.softmax(dim=-1)
 
-    attn_map = attn_map.view(patches, patches) # reshape to patch grid
+    attn_map = attn_map.view(n_patches, n_patches) # reshape to patch grid
 
     attn_map = torch.nn.functional.interpolate(
         attn_map.unsqueeze(0).unsqueeze(0),  # Add batch and channel dimensions
@@ -92,22 +94,19 @@ def overlay_attn(attn_map, head='agg', size=(518,518), patches=37):
 # this needs to be module top-level to keep serialization through pickle possible
 def get_resize_xfrm(size, resizer_helper, fill=255, method='resize_keep_aspect_ratio'):
 
+    transforms_size = []
+
     if method == 'crop':
-        transforms_size = [
-            # built in torchvision functions are picklable
-            transforms.RandomCrop(size, pad_if_needed=True, fill=fill)
-        ]
+        # built in torchvision functions are picklable
+        transforms_size.append(transforms.RandomCrop(size, pad_if_needed=True, fill=fill))
     elif method == 'resize':
-        transforms_size = [
-            transforms.Resize(size)
-        ]
+        transforms_size.append(transforms.Resize(size))
     elif method == 'resize_keep_aspect_ratio':
         # transforms.Resize scales smallest dim to `size` arg
-        transforms_size = [
-            transforms.Lambda(resizer_helper.resize_on_smaller_dim),
-            # pad with white to ViT input size
-            transforms.Lambda(resizer_helper.pad_image)
-        ]
+        transforms_size.append(transforms.Lambda(resizer_helper.resize_on_smaller_dim))
+        # pad with white to ViT input size
+        transforms_size.append(transforms.Lambda(resizer_helper.pad_image))
+
     ### needs work to be picklable
     # elif method == 'prop_crop':
     #     transforms_size = [

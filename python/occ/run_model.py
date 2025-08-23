@@ -116,11 +116,10 @@ def fit(model, device, criterion, optimizer, config, attn_maps=[], verbose=True)
             train_loader = LoadDataset.load_dataset(
                 config,
                 # use seed+epoch to set a new seed for each epoch and keep results reproducible
-                config['seed']+epoch,
+                config['general']['seed']+epoch,
                 split='train'
             )
         valid_loader = LoadDataset.load_dataset(
-            config['paths']['test_folder'],
             config,
             config['general']['seed']+epoch,
             split='test'

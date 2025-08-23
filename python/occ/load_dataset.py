@@ -18,7 +18,10 @@ class LoadDataset:
 
     def load_dataset(config, seed, split):
 
-        data_path = config['paths']['train_folder']
+        if split == 'train':
+            data_path = config['paths']['train_folder']
+        else:
+            data_path = config['paths']['test_folder']
 
         # obtain train and validation transformation compositions
         processor = ProcessImages(config)

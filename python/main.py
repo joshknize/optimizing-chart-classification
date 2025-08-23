@@ -1,3 +1,4 @@
+import datetime
 import json
 import logging
 import sys
@@ -9,7 +10,6 @@ from occ.utils import hook_attn_map, print_elements, seed_all
 from occ.vit import ViTModel
 
 # TODO
-    # pick back up at run_model.py 133 -> work on vit.py and utils.py
     # custom dataset split
     # docstrings
     # logging
@@ -33,10 +33,17 @@ def main():
 
     cfg = json.load(cfg)
 
+    # get timestamp for model file name
+    if cfg['general']['datetime'] == 'auto':
+        timestamp = datetime.datetime.now().strftime('%Y%m%dT%H%M')
+    else:
+        timestamp = cfg['general']['datetime']
+
     logger = logging.getLogger(__name__)
-    logging.basicConfig(filename=f'{cfg['general']['model_id']}_{cfg['general']['datetime']}.log',
+    logging.basicConfig(filename=f'{cfg['paths']['log_output']}/{cfg['general']['model_id']}_{timestamp}.log',
                         encoding='utf-8',
-                        level=logging.INFO # TODO cfg
+                        level=cfg['general']['log_level'],
+                        filemode='w'
                         )
 
     # apply a seed for reproducibility
@@ -49,11 +56,15 @@ def main():
 
     model = ViTModel(config=cfg)
 
+    # parameters for attention head extraction
     attn_maps = []
+    n_blocks = len(model.model.blocks)-1 # excluding classification head
+    n_heads = model.model.blocks[n_blocks].attn.num_heads
+    
     if cfg["output"]["include_attention_overlay"]:
-        partial_hook = partial(hook_attn_map, attn_maps=attn_maps)
-        # register the hook to the last attention layer of OCC model
-        model.model.blocks[11].attn.qkv.register_forward_hook(partial_hook)
+        partial_hook = partial(hook_attn_map, attn_maps=attn_maps, n_heads=n_heads)
+        # register the hook to the last block to extract the highest level features
+        model.model.blocks[n_blocks].attn.qkv.register_forward_hook(partial_hook)
 
     results = run_model(
         model=model,
