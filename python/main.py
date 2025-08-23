@@ -9,8 +9,9 @@ from occ.utils import hook_attn_map, print_elements, seed_all
 from occ.vit import ViTModel
 
 # TODO
-    # process_images.py and connect to load dataset
     # pick back up at run_model.py 133 -> work on vit.py and utils.py
+    # custom dataset split
+    # docstrings
 
 def main():
 

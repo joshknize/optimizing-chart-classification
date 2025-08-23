@@ -60,10 +60,13 @@ class ProcessImages:
         ])
 
         transforms_augments = [
+            # apply artificial augmentations (not used in 2025 OCC ICDAR paper)
             AnnotationAugment(annotation_augments),
-            transforms.RandomHorizontalFlip(augments['hor_flip']),
-            transforms.RandomInvert(augments['invert']),
+            # SCL augments
+            transforms.RandomHorizontalFlip(augments['scl']['hor_flip']),
+            transforms.RandomInvert(augments['scl']['invert']),
             jitter_transform,
+            # overlay gridlines
             GridAugment(augments['grid']['prob'],
                         augments['grid']['col'],
                         augments['grid']['lwd'],
@@ -79,6 +82,7 @@ class ProcessImages:
                        augments['mask']['pct_mask']),
         ]
 
+        # transformations applied to both train and validation
         transforms_general = [
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
@@ -122,6 +126,7 @@ class ApplyMasks:
 
         h, w, _ = img.shape
 
+        # single square mask
         if not self.by_patch:
             # select random cut of img and replace pixels in all channels with pixel value
             for _ in range(self.num_patches):
@@ -130,12 +135,16 @@ class ApplyMasks:
 
                 img[top_left_y:(top_left_y + self.mask_len),
                     top_left_x:(top_left_x + self.mask_len), :] = self.color
+        # else patch-based masking
         else:
-            # randomly select patches of the image to mask
+            # obtain coordinates of top left pixel of each patch
             patch_ind = np.arange(0, h, self.patch_len)
             patch_coords = list(product(patch_ind, patch_ind))
+            # get necessary number of patches to mask pct of image specified in config
             n_masks = int(self.pct_mask * len(patch_coords))
+            # randomly select patches to mask
             masked_coords = random.sample(patch_coords, n_masks)
+            # fill patches with mask color
             for coord in masked_coords:
                 img[coord[0]:(coord[0] + self.patch_len),
                     coord[1]:(coord[1] + self.patch_len), :] = self.color
@@ -154,6 +163,7 @@ class GridAugment:
         self.uniform = uniform
 
     def __call__(self, img):
+        # only apply gridlines at specified probability
         if random.random() > self.prob:
             return img
 
@@ -189,9 +199,11 @@ class AnnotationAugment:
         self.config = config
 
     def __call__(self, img):
+        # apply text or shape augmentations at specified probability
         add_text = random.random() < self.config['text_prob']
         add_shape = random.random() < self.config['shape_prob']
 
+        # short-circuit if not applying annotation augments
         if not (add_text or add_shape):
             return img
 
@@ -213,6 +225,7 @@ class AnnotationAugment:
         skewed_distribution = self.config['skewed_distribution']
         probabilities = self.config['probabilities']
 
+        # add random text augmentations to image
         if add_text:
             for _ in range(random.randint(1, self.config['max_text'])):
                 # randomize:
@@ -239,7 +252,7 @@ class AnnotationAugment:
                 # randomize:
                 if self.config['position'] == 'gaussian':
                     # position with bias towards middle. the polygon is inscribed in a bounding circle (x, y, r)
-                    shape_center = (center[0] + random.gauss(0, self.std_dev), 
+                    shape_center = (center[0] + random.gauss(0, self.std_dev),
                                     center[1] + random.gauss(0, self.std_dev))
                 elif self.config['position'] == 'uniform':
                     # position with uniform distribution within center bounds of image
