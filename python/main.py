@@ -6,17 +6,8 @@ from functools import partial
 
 import torch
 from occ.run_model import run_model
-from occ.utils import hook_attn_map, print_elements, seed_all
+from occ.utils import hook_attn_map, seed_all
 from occ.vit import ViTModel
-
-# TODO
-    # custom dataset split
-    # docstrings
-    # logging
-    # reproducibility check
-    # readme
-    # dinov3
-    # better attention map output options / functionality
 
 def main():
 
@@ -28,7 +19,7 @@ def main():
         cfg = open(cfg_string)
     else:
         raise ValueError(
-            "Please provide an argument for a json config location. E.g. `python ViT.py ./data/config.json`"
+            "Please provide an argument for a json config location. E.g. `python python/main.py config/config.json`"
         )
 
     cfg = json.load(cfg)
@@ -43,6 +34,7 @@ def main():
     logging.basicConfig(filename=f'{cfg['paths']['log_output']}/{cfg['general']['model_id']}_{timestamp}.log',
                         encoding='utf-8',
                         level=cfg['general']['log_level'],
+                        force=True,
                         filemode='w'
                         )
 
@@ -50,9 +42,8 @@ def main():
     seed_all(cfg["general"]["seed"])
 
     if cfg["general"]["verbose"]:
-        logger.info("Print config.json items")
-        print_elements(cfg)
-        logger.info("End config print")
+        logger.info(f"Model ID: {cfg['general']['model_id']}")
+        logger.info(f'Description: {cfg['general']['description']}')
 
     model = ViTModel(config=cfg)
 

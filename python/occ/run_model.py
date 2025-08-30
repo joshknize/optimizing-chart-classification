@@ -165,7 +165,7 @@ def fit(model, device, criterion, optimizer, config, attn_maps=[], verbose=True)
             path = os.path.join(config['paths']['model_save_dir'],
                                 f"model_{config['general']['model_id']}_{epoch}.pth")
             # save model state at last epoch
-            if epoch == config['hyperparameters']['no_epochs']:
+            if epoch == config['training']['no_epochs']:
                 torch.save(model.state_dict(), path)
                 logger.info(f"Model saved at epoch {epoch} -- Training complete")
             # save model state at checkpoints
@@ -190,9 +190,15 @@ def fit(model, device, criterion, optimizer, config, attn_maps=[], verbose=True)
         # ameliorate memory issues
         gc.collect()
 
+    # get timestamp for model file name
+    if config['general']['datetime'] == 'auto':
+        timestamp = datetime.datetime.now().strftime('%Y%m%dT%H%M')
+    else:
+        timestamp = config['general']['datetime']
+
     # concatenate all results at once, write to csv
     summary_df = pd.concat(summary_results_list, axis=0)
-    path = os.path.join(config['paths']['csv_output'], f"{config['general']['model_id']}.csv")
+    path = os.path.join(config['paths']['csv_output'], f"{config['general']['model_id']}_{timestamp}.csv")
     summary_df.to_csv(path, index=False)
 
     if verbose:

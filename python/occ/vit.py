@@ -120,7 +120,7 @@ class ViTModel(nn.Module):
 
         # store epoch statistics for csv output
         summary_results = {
-            "model": config['model_id'],
+            "model": config['general']['model_id'],
             "epoch": epoch,
             "class": range(15),
             "type": "train",
@@ -279,18 +279,23 @@ class ViTModel(nn.Module):
             logger.info("\t".join(str(recalls[i]) for i in range(len(classes))))
             logger.info("\t".join(str(f1s[i]) for i in range(len(classes))))
 
-        # confusion matrix: only gets overwritten if there's a new best F1 score
-        if config['output']['confusion_matrix'] & (valid_f1 > valid_f1_max) & (not train):
-            cm = confusion_matrix(all_targets, all_predictions)
-            plt.figure(figsize=(10, 8))
-            sn.heatmap(cm, annot=True, fmt='d', xticklabels=classes, yticklabels=classes, cmap='Blues')
-            plt.xlabel('Predicted')
-            plt.ylabel('True')
-            plt.title('Confusion Matrix')
-            path = os.path.join(config['paths']['conf_mat_output_dir'],
-                                f"confusion_matrix_{config['model_id']}.png")
-            plt.savefig(path)
-            plt.close()
+        # confusion matrix
+        if config['output']['confusion_matrix'] & (not train):
+            # write only if conditions meet best_f1 or final_epoch, as specified in cfg
+            if (
+            (config['output']['confusion_matrix_type'] == 'best_f1' & (valid_f1 > valid_f1_max) ) | 
+            (config['output']['confusion_matrix_type'] == 'final_epoch' & epoch == config['training']['no_epochs'])
+            ):
+                cm = confusion_matrix(all_targets, all_predictions)
+                plt.figure(figsize=(10, 8))
+                sn.heatmap(cm, annot=True, fmt='d', xticklabels=classes, yticklabels=classes, cmap='Blues')
+                plt.xlabel('Predicted')
+                plt.ylabel('True')
+                plt.title('Confusion Matrix')
+                path = os.path.join(config['paths']['conf_mat_output_dir'],
+                                    f"confusion_matrix_{config['general']['model_id']}.png")
+                plt.savefig(path)
+                plt.close()
 
         results = {
             "targets": all_targets,
@@ -301,7 +306,7 @@ class ViTModel(nn.Module):
 
         # output for csv
         summary_results = {
-            "model": config['model_id'],
+            "model": config['general']['model_id'],
             "epoch": epoch,
             "class": range(15),
             "type": "eval",
@@ -312,7 +317,7 @@ class ViTModel(nn.Module):
         }
         summary_results = pd.DataFrame(summary_results)
 
-        return 0 if valid_loss == 0 else (
+        return (
             valid_loss / len(valid_loader),
             sum(recalls.values()) / len(classes),
             sum(precisions.values()) / len(classes),

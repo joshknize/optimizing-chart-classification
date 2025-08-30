@@ -78,7 +78,7 @@ class LoadDataset:
 
             data_loader = torch.utils.data.DataLoader(
                 train_dataset,
-                batch_size=config['hyperparameters']['batch_size'],
+                batch_size=config['training']['batch_size'],
                 num_workers=config['general']['no_workers'],
                 shuffle=True
             )
@@ -90,7 +90,7 @@ class LoadDataset:
             )
             data_loader = torch.utils.data.DataLoader(
                 val_dataset,
-                batch_size = config['hyperparameters']['batch_size'],
+                batch_size = config['training']['batch_size'],
                 num_workers=config['general']['no_workers'],
                 shuffle=False
             )

@@ -14,8 +14,9 @@
     "training": {
         "_comment": "for resuming training from checkpoint, use total epochs for `no_epochs`. E.g. `start_epoch` = 1251, `no_epochs` = 1500",
         "start_epoch": 1,
-        "no_epochs": 2,
+        "no_epochs": 1250,
         "chkpt_freq": 250,
+        "batch_size": 16,
         "weighted_data_loader": true,
         "wdl_weight": 0.75,
         "wdl_size": 3000
@@ -86,7 +87,6 @@
         }
     },
     "hyperparameters": {
-        "batch_size": 16,
         "patch_length": 14,
         "learning_rate": 0.0000002,
         "dropout_rate": 0.0,
@@ -103,18 +103,20 @@
     },
     "output": {
         "confusion_matrix": false,
-        "_comment": "error analysis will save all misclassified images",
+        "comment1_": "write confusion matrix at validation `best_f1` or `final_epoch`",
+        "confusion_matrix_type": "final_epoch",
+        "_comment2": "error analysis will save all misclassified images",
         "error_analysis": false,
         "include_attention_overlay": false
     },
     "paths": {
         "model": "",
-        "train_folder": "data/working/custom_estimation_split",
-        "test_folder": "data/working/tiny_validation_split",
-        "model_save_dir": "",
-        "log_output": "repo/optimizing-chart-classification/output/logs",
-        "csv_output": "repo/optimizing-chart-classification/output/summary_data",
-        "conf_mat_output_dir": "repo/optimizing-chart-classification/output/plots",
-        "errors_dir": "repo/optimizing-chart-classification/output/error_analysis"
+        "train_folder": "../../data/working/custom_estimation_split",
+        "test_folder": "../../data/working/tiny_validation_split",
+        "model_save_dir": "../..",
+        "log_output": "output/logs",
+        "csv_output": "output/summary_data",
+        "conf_mat_output_dir": "output/plots",
+        "errors_dir": "output/error_analysis"
     }
 }

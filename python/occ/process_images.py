@@ -39,7 +39,7 @@ class ProcessImages:
         transforms_size = get_resize_xfrm(size,
                                           resizer_helper,
                                           fill=self.config['image_processing']['pad_fill'],
-                                          method=self.config['image_processing']['resize'])
+                                          method=self.config['image_processing']['method'])
 
         # spatial, coloring, luminosity (SCL) augmentations
         brightness_jitter = transforms.ColorJitter(brightness=augments['scl']['brightness'])
