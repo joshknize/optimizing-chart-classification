@@ -1,6 +1,6 @@
 {
     "general": {
-        "model_id": "occ2025",
+        "model_id": "occ2025-eval",
         "description": "Optimizing Chart Classification (2025) model parameters. CHART-Info 2024 F1 = 94.9%",
         "comment": "datetime format = %Y%m%dT%H%M. it can also be set to 'auto'",
         "datetime": "20250314T2359",
@@ -8,23 +8,23 @@
         "patch_length": 14,
         "no_workers": 4,
         "seed": 1867,
-        "train_model": true,
+        "train_model": false,
         "verbose": true
     },
     "training": {
         "_comment": "for resuming training from checkpoint, use total epochs for `no_epochs`. E.g. `start_epoch` = 1251, `no_epochs` = 1500",
         "start_epoch": 1,
-        "no_epochs": 1250,
+        "no_epochs": 1,
         "chkpt_freq": 250,
         "batch_size": 16,
-        "weighted_data_loader": true,
+        "weighted_data_loader": false,
         "wdl_weight": 0.75,
         "wdl_size": 3000
     },
     "model": {
         "type": "vit_base_patch14_reg4_dinov2.lvd142m",
         "pretrained_timm": true,
-        "pretrained_local": false,
+        "pretrained_local": true,
         "n_classes": 15
     },
     "image_processing": {
@@ -103,7 +103,7 @@
         "reduction": "mean"
     },
     "output": {
-        "confusion_matrix": false,
+        "confusion_matrix": true,
         "comment1_": "write confusion matrix at validation `best_f1` or `final_epoch`",
         "confusion_matrix_type": "final_epoch",
         "_comment2": "error analysis will save all misclassified images",
@@ -111,9 +111,9 @@
         "include_attention_overlay": false
     },
     "paths": {
-        "model": "",
-        "train_folder": "../../data/CHARTINFO_2024_Train/images",
-        "test_folder": "../../data/working/tiny_validation_split",
+        "model": "../../model_occ2025_1250.pth",
+        "train_folder": "../../data/working/custom_estimation_split",
+        "test_folder": "../../data/working/test",
         "model_save_dir": "../..",
         "log_output": "output/logs",
         "csv_output": "output/summary_data",

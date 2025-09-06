@@ -283,8 +283,8 @@ class ViTModel(nn.Module):
         if config['output']['confusion_matrix'] & (not train):
             # write only if conditions meet best_f1 or final_epoch, as specified in cfg
             if (
-            (config['output']['confusion_matrix_type'] == 'best_f1' & (valid_f1 > valid_f1_max) ) | 
-            (config['output']['confusion_matrix_type'] == 'final_epoch' & epoch == config['training']['no_epochs'])
+            ((config['output']['confusion_matrix_type'] == 'best_f1') & (valid_f1 > valid_f1_max) ) | 
+            ((config['output']['confusion_matrix_type'] == 'final_epoch') & epoch == config['training']['no_epochs'])
             ):
                 cm = confusion_matrix(all_targets, all_predictions)
                 plt.figure(figsize=(10, 8))
