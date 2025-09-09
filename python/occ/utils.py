@@ -36,22 +36,37 @@ def print_elements(data, indent=0):
     else:
         print(' ' * indent + str(data))
 
-def hook_attn_map(input, output, attn_maps, n_heads):
+# def hook_attn_map(input, output, attn_maps, n_heads):
 
-    with torch.no_grad():
-        input = input[0]
-        B, N, C = input.shape
-        qkv = (
-            output.detach()
-            .reshape(B, N, 3, 12, C // n_heads)
-            .permute(2, 0, 3, 1, 4)
-        )
-        q, k = (
-            qkv[0],
-            qkv[1]
-        )
-        attn = (q @ k.transpose(-2, -1)) * (C // n_heads)
-        attn_maps.append(attn)
+#     with torch.no_grad():
+#         input = input[0]
+#         B, N, C = input.shape
+#         qkv = (
+#             output.detach()
+#             .reshape(B, N, 3, 12, C // n_heads)
+#             .permute(2, 0, 3, 1, 4)
+#         )
+#         q, k = (
+#             qkv[0],
+#             qkv[1]
+#         )
+#         attn = (q @ k.transpose(-2, -1)) * (C // n_heads)
+#         attn_maps.append(attn)
+
+def make_hook(attn_maps, n_heads):
+    def hook(module, input, output):
+        with torch.no_grad():
+            input = input[0]
+            B, N, C = input.shape
+            qkv = (
+                output.detach()
+                .reshape(B, N, 3, n_heads, C // n_heads)
+                .permute(2, 0, 3, 1, 4)
+            )
+            q, k = qkv[0], qkv[1]
+            attn = (q @ k.transpose(-2, -1)) * (C // n_heads)
+            attn_maps.append(attn)
+    return hook
 
 def overlay_attn(attn_map, head='agg', size=518, patch_len=14):
     
@@ -74,17 +89,17 @@ def overlay_attn(attn_map, head='agg', size=518, patch_len=14):
         attn_map = layer_norm(attn_map)
 
     # need to remove register and classification indices
-    num_registers = len(attn_map) - size
+    num_registers = int(attn_map.shape[-1] - (n_patches * n_patches))
     attn_map = attn_map[num_registers:]
 
     # now get softmax
     attn_map = attn_map.softmax(dim=-1)
 
-    attn_map = attn_map.view(n_patches, n_patches) # reshape to patch grid
+    attn_map = attn_map.view((int(n_patches), int(n_patches))) # reshape to patch grid
 
     attn_map = torch.nn.functional.interpolate(
         attn_map.unsqueeze(0).unsqueeze(0),  # Add batch and channel dimensions
-        size=size,  # Target size
+        size=size[0],  # Target size
         mode='bilinear',  # Bilinear interpolation
         align_corners=False
     ).squeeze(0).squeeze(0)

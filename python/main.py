@@ -6,7 +6,7 @@ from functools import partial
 
 import torch
 from occ.run_model import run_model
-from occ.utils import hook_attn_map, seed_all
+from occ.utils import make_hook, seed_all
 from occ.vit import ViTModel
 
 def main():
@@ -53,9 +53,9 @@ def main():
     n_heads = model.model.blocks[n_blocks].attn.num_heads
     
     if cfg["output"]["include_attention_overlay"]:
-        partial_hook = partial(hook_attn_map, attn_maps=attn_maps, n_heads=n_heads)
+        hook_fn = make_hook(attn_maps, n_heads)
         # register the hook to the last block to extract the highest level features
-        model.model.blocks[n_blocks].attn.qkv.register_forward_hook(partial_hook)
+        model.model.blocks[n_blocks].attn.qkv.register_forward_hook(hook_fn)
 
     results = run_model(
         model=model,

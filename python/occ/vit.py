@@ -205,7 +205,7 @@ class ViTModel(nn.Module):
                             preds_misses.append(pred_label.cpu().numpy())
                             probs_misses.append(prob.cpu().numpy())
                             # store attention maps for error analysis. they're hooked using code in `main()`
-                            if len(attn_maps) > 0 and config['output']['attention_map_overlay']:
+                            if len(attn_maps) > 0 and config['output']['include_attention_overlay']:
                                 # append a single map of 12-headed attn for the missed image
                                 attn_misses.append(attn_maps[-1][idx])
 
@@ -288,13 +288,14 @@ class ViTModel(nn.Module):
             ):
                 cm = confusion_matrix(all_targets, all_predictions)
                 plt.figure(figsize=(10, 8))
+                plt.tight_layout()
                 sn.heatmap(cm, annot=True, fmt='d', xticklabels=classes, yticklabels=classes, cmap='Blues')
                 plt.xlabel('Predicted')
-                plt.ylabel('True')
+                plt.ylabel('Actual')
                 plt.title('Confusion Matrix')
                 path = os.path.join(config['paths']['conf_mat_output_dir'],
                                     f"confusion_matrix_{config['general']['model_id']}.png")
-                plt.savefig(path)
+                plt.savefig(path, bbox_inches='tight')
                 plt.close()
 
         results = {
