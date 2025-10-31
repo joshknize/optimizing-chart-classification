@@ -53,5 +53,5 @@ For more details, see comments in the code and config file, as well as the paper
 
 Feel free to reach out or connect!
 
-- Email: jknize1@depaul.edu
+- Email: jknize1@depaul.edu, kdavilac@depaul.edu
 - LinkedIn: https://www.linkedin.com/in/josh-knize-1bb110177/
