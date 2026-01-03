@@ -1,13 +1,13 @@
-import datetime
 import json
 import logging
 import sys
+from datetime import datetime
 from functools import partial
 
 import torch
 from occ.run_model import run_model
 from occ.utils import make_hook, seed_all
-from python.occ.model import OCCModel
+from occ.model import OCCModel
 
 def main():
 
@@ -26,7 +26,7 @@ def main():
 
     # get timestamp for model file name
     if cfg['general']['datetime'] == 'auto':
-        timestamp = datetime.datetime.now().strftime('%Y%m%dT%H%M')
+        timestamp = datetime.now().strftime('%Y%m%dT%H%M')
     else:
         timestamp = cfg['general']['datetime']
 

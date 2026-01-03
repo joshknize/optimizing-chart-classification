@@ -14,8 +14,8 @@
     "training": {
         "_comment": "for resuming training from checkpoint, use total epochs for `no_epochs`. E.g. `start_epoch` = 1251, `no_epochs` = 1500",
         "start_epoch": 1,
-        "no_epochs": 100,
-        "chkpt_freq": 250,
+        "no_epochs": 1000,
+        "chkpt_freq": 100,
         "batch_size": 16,
         "weighted_data_loader": true,
         "wdl_weight": 0.75,
@@ -112,8 +112,8 @@
     },
     "paths": {
         "model": "",
-        "train_folder": "../../data/CHARTINFO_2024_Train/images",
-        "test_folder": "../../data/tiny_val",
+        "train_folder": "../../data/custom_est",
+        "test_folder": "../../data/custom_val",
         "model_save_dir": "../..",
         "log_output": "output/logs",
         "csv_output": "output/summary_data",
