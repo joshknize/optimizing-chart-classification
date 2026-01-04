@@ -112,8 +112,8 @@
     },
     "paths": {
         "model": "../../model_occ2025_1250.pth",
-        "train_folder": "../../data/working/custom_estimation_split",
-        "test_folder": "../../data/working/test",
+        "train_folder": "../../data/custom_est",
+        "test_folder": "../../data/custom_val",
         "model_save_dir": "../..",
         "log_output": "output/logs",
         "csv_output": "output/summary_data",
