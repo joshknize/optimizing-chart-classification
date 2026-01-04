@@ -17,21 +17,30 @@ plt.style.use("ggplot")
 
 logger = logging.getLogger(__name__)
 
-class ViTModel(nn.Module):
+class OCCModel(nn.Module):
     def __init__(self, config):
 
         n_classes = config['model']['n_classes']
         model_path = config['paths']['model']
         pretrained = config['model']['pretrained_local']
 
-        super(ViTModel, self).__init__()
+        super(OCCModel, self).__init__()
 
-        if pretrained:
+        # configure timm.create_model kwargs
+        model_kwargs = {
+            'num_classes': n_classes,
+            'drop_rate': config['hyperparameters']['dropout_rate'],
+            'pretrained': config['model']['pretrained_timm']
+        }
+
+        # vit-specific
+        model_name = config['model']['type'].lower()
+        if 'vit' in model_name or 'swin' in model_name:
+            model_kwargs['attn_drop_rate'] = config['hyperparameters']['attn_dropout_rate']
+
+        if pretrained:          
             # load local model checkpoint
-            self.model = timm.create_model(config['model']['type'],
-                                           num_classes=n_classes,
-                                           drop_rate=config['hyperparameters']['dropout_rate'],
-                                           attn_drop_rate=config['hyperparameters']['attn_dropout_rate'])
+            self.model = timm.create_model(config['model']['type'], **model_kwargs)
             state_dict = torch.load(model_path, map_location=torch.device('cpu'))
 
             # local models are saved with prefix that needs to be removed
@@ -41,20 +50,9 @@ class ViTModel(nn.Module):
             model_dict.update(pretrained_dict)
             self.model.load_state_dict(model_dict)
             model_dict = self.model.state_dict()
-
-        elif config['model']['pretrained_timm']:
-            # load model with pretrained timm weights
-            self.model = timm.create_model(config['model']['type'],
-                                           num_classes=n_classes,
-                                           pretrained=True,
-                                           drop_rate=config['hyperparameters']['dropout_rate'],
-                                           attn_drop_rate=config['hyperparameters']['attn_dropout_rate'])
         else:
-            # load uninitialized model
-            self.model = timm.create_model(config['model']['type'],
-                                           num_classes=n_classes,
-                                           drop_rate=config['hyperparameters']['dropout_rate'],
-                                           attn_drop_rate=config['hyperparameters']['attn_dropout_rate'])
+            # load uninitialized model or model with pretrained timm weights
+            self.model = timm.create_model(config['model']['type'], **model_kwargs)
 
         # not supported: option to experiment with freezing some layers of the network (not used in 2025 OCC paper)
         # if config['training']['freeze_layers']:

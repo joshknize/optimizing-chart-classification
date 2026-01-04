@@ -192,7 +192,7 @@ def fit(model, device, criterion, optimizer, config, attn_maps=[], verbose=True)
 
     # get timestamp for model file name
     if config['general']['datetime'] == 'auto':
-        timestamp = datetime.datetime.now().strftime('%Y%m%dT%H%M')
+        timestamp = datetime.now().strftime('%Y%m%dT%H%M')
     else:
         timestamp = config['general']['datetime']
 

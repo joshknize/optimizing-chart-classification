@@ -1,13 +1,13 @@
-import datetime
 import json
 import logging
 import sys
+from datetime import datetime
 from functools import partial
 
 import torch
 from occ.run_model import run_model
 from occ.utils import make_hook, seed_all
-from occ.vit import ViTModel
+from occ.model import OCCModel
 
 def main():
 
@@ -26,7 +26,7 @@ def main():
 
     # get timestamp for model file name
     if cfg['general']['datetime'] == 'auto':
-        timestamp = datetime.datetime.now().strftime('%Y%m%dT%H%M')
+        timestamp = datetime.now().strftime('%Y%m%dT%H%M')
     else:
         timestamp = cfg['general']['datetime']
 
@@ -45,14 +45,14 @@ def main():
         logger.info(f"Model ID: {cfg['general']['model_id']}")
         logger.info(f'Description: {cfg['general']['description']}')
 
-    model = ViTModel(config=cfg)
+    model = OCCModel(config=cfg)
 
     # parameters for attention head extraction
     attn_maps = []
-    n_blocks = len(model.model.blocks)-1 # excluding classification head
-    n_heads = model.model.blocks[n_blocks].attn.num_heads
     
     if cfg["output"]["include_attention_overlay"]:
+        n_blocks = len(model.model.blocks)-1 # excluding classification head
+        n_heads = model.model.blocks[n_blocks].attn.num_heads
         hook_fn = make_hook(attn_maps, n_heads)
         # register the hook to the last block to extract the highest level features
         model.model.blocks[n_blocks].attn.qkv.register_forward_hook(hook_fn)

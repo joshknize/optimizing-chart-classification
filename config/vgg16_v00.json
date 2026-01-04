@@ -1,35 +1,35 @@
 {
     "general": {
-        "model_id": "occ2025-eval",
-        "description": "Optimizing Chart Classification (2025) model parameters. CHART-Info 2024 F1 = 94.9%",
+        "model_id": "VGG16",
+        "description": "VGG-16 Experiment for XAI CRP",
         "comment": "datetime format = %Y%m%dT%H%M. it can also be set to 'auto'",
-        "datetime": "20250314T2359",
+        "datetime": "auto",
         "log_level": "INFO",
-        "patch_length": 14,
+        "patch_length": "n/a",
         "no_workers": 4,
         "seed": 1867,
-        "train_model": false,
+        "train_model": true,
         "verbose": true
     },
     "training": {
         "_comment": "for resuming training from checkpoint, use total epochs for `no_epochs`. E.g. `start_epoch` = 1251, `no_epochs` = 1500",
         "start_epoch": 1,
-        "no_epochs": 1,
-        "chkpt_freq": 250,
+        "no_epochs": 1000,
+        "chkpt_freq": 100,
         "batch_size": 16,
-        "weighted_data_loader": false,
+        "weighted_data_loader": true,
         "wdl_weight": 0.75,
         "wdl_size": 3000
     },
     "model": {
-        "type": "vit_base_patch14_reg4_dinov2.lvd142m",
+        "type": "vgg16.tv_in1k",
         "pretrained_timm": true,
-        "pretrained_local": true,
+        "pretrained_local": false,
         "n_classes": 15
     },
     "image_processing": {
-        "size": 518,
-        "resize": 518,
+        "size": 224,
+        "resize": 224,
         "pad_fill": 255,
         "_comment1": "Options: crop, resize, resize_keep_aspect_ratio", 
         "method": "resize_keep_aspect_ratio"
@@ -52,7 +52,7 @@
             "_comment1": "adds single pixel value square masks to ~prob percent of training images",
             "prob": 1,
             "num_patches": 1,
-            "mask_length": 284,
+            "mask_length": 123,
             "pixel_value": 128,
             "_comment2": "option to override above args for patch-based masking",
             "by_patch": false,
@@ -88,7 +88,7 @@
         }
     },
     "hyperparameters": {
-        "patch_length": 14,
+        "patch_length": "n/a",
         "learning_rate": 0.0000002,
         "dropout_rate": 0.0,
         "attn_dropout_rate": 0.0
@@ -111,7 +111,7 @@
         "include_attention_overlay": false
     },
     "paths": {
-        "model": "../../model_occ2025_1250.pth",
+        "model": "",
         "train_folder": "../../data/custom_est",
         "test_folder": "../../data/custom_val",
         "model_save_dir": "../..",
