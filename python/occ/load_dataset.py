@@ -41,7 +41,7 @@ class LoadDataset:
 
                 # get counts
                 for dir in class_list:
-                    class_img_count = len(os.listdir(f'{config['paths']['train_folder']}/{dir}'))
+                    class_img_count = len(os.listdir(f"{config['paths']['train_folder']}/{dir}"))
                     total_imgs += class_img_count
                     config_split[dir] = class_img_count
 
