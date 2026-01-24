@@ -1,3 +1,39 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "optimizing-chart-classification"
+version = "0.1.0"
+description = "Optimizing Chart Classification: A Study of Data Augmentation and Training Strategies"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [
+    {name = "Josh Knize", email = "jknize1@depaul.edu"}
+]
+keywords = ["computer-vision", "chart-classification", "deep-learning"]
+
+dependencies = [
+    "kornia",
+    "matplotlib",
+    "numpy",
+    "pandas",
+    "Pillow",
+    "scikit_learn",
+    "seaborn",
+    "timm",
+    "torch",
+    "torchvision"
+]
+
+[project.urls]
+Repository = "https://github.com/joshknize/optimizing-chart-classification"
+
+[tool.setuptools.packages.find]
+where = ["python"]
+include = ["occ*"]
+
 [tool.ruff]
 line-length = 120
 exclude = [

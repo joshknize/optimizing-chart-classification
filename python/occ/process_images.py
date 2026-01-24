@@ -5,7 +5,7 @@ from itertools import product
 
 import numpy as np
 import torch
-import torchvision.transforms.v2 as transforms
+import torchvision.transforms as transforms
 from PIL import Image, ImageDraw, ImageFont
 
 from occ.utils import get_resize_xfrm

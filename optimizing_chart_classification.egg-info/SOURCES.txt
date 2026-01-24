@@ -1,0 +1,15 @@
+LICENSE
+README.md
+pyproject.toml
+optimizing_chart_classification.egg-info/PKG-INFO
+optimizing_chart_classification.egg-info/SOURCES.txt
+optimizing_chart_classification.egg-info/dependency_links.txt
+optimizing_chart_classification.egg-info/requires.txt
+optimizing_chart_classification.egg-info/top_level.txt
+python/main.py
+python/occ/__init__.py
+python/occ/load_dataset.py
+python/occ/model.py
+python/occ/process_images.py
+python/occ/run_model.py
+python/occ/utils.py

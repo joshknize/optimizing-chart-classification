@@ -1,0 +1,10 @@
+kornia
+matplotlib
+numpy
+pandas
+Pillow
+scikit_learn
+seaborn
+timm
+torch
+torchvision

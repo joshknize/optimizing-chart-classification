@@ -3,7 +3,7 @@ import random
 
 import numpy as np
 import torch
-import torchvision.transforms.v2 as transforms
+import torchvision.transforms as transforms
 from torch import nn
 
 
